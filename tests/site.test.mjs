@@ -5,9 +5,27 @@ import { test } from 'node:test';
 const output = new URL('../dist/', import.meta.url);
 const read = (path) => readFile(new URL(path, output), 'utf8');
 
-test('app-ads.txt is exact and remains a plain text static file', async () => {
+test('app-ads.txt contains required publishers and valid unique entries', async () => {
   const text = await read('app-ads.txt');
-  assert.equal(text, 'google.com, pub-6633902647647422, DIRECT, f08c47fec0942fa0\n');
+  const entries = text.split(/\r?\n/).filter((line) => line.trim() && !line.trimStart().startsWith('#'));
+  const required = [
+    'google.com, pub-6633902647647422, DIRECT, f08c47fec0942fa0',
+    'google.com, pub-1922252697897939, DIRECT, f08c47fec0942fa0',
+  ];
+  for (const publisher of required) assert.ok(entries.includes(publisher), `missing ${publisher}`);
+  const seen = new Set();
+  for (const entry of entries) {
+    const fields = entry.split(',').map((field) => field.trim());
+    assert.ok(fields.length === 3 || fields.length === 4, `invalid field count: ${entry}`);
+    const [domain, publisherId, relationship, certificationId] = fields;
+    assert.match(domain, /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i);
+    assert.match(publisherId, /^[a-z0-9_-]+$/i);
+    assert.match(relationship, /^(?:DIRECT|RESELLER)$/);
+    if (certificationId !== undefined) assert.match(certificationId, /^[0-9a-f]+$/i);
+    const key = `${domain.toLowerCase()},${publisherId}`;
+    assert.ok(!seen.has(key), `duplicate publisher: ${entry}`);
+    seen.add(key);
+  }
   assert.equal(text.includes('<html'), false);
 });
 

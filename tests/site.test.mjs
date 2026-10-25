@@ -60,19 +60,74 @@ test('local links on public pages resolve to generated files', async () => {
   }
 });
 
-test('privacy page discloses app data and advertising providers', async () => {
+test('privacy page discloses the current app data and providers', async () => {
   const html = await read('privacy/index.html');
-  for (const text of ['phone number', 'Supabase', 'Firebase', 'AdMob', 'App Open', 'Rewarded', 'deletion']) {
-    assert.ok(html.toLowerCase().includes(text.toLowerCase()), `privacy page should include ${text}`);
+  for (const text of [
+    'email address (confirmed with a one-time code',
+    'PUBG Player ID',
+    'Points balance and Points transactions',
+    'participation number assigned by our server',
+    'contact details, such as a phone number and city, so we can deliver your prize',
+    'push-notification token',
+    'Firebase Cloud Messaging',
+    'AdMob',
+    'app-open ads',
+    'rewarded ads',
+    'non-personalized ads',
+    'Joining a giveaway never requires watching an ad.',
+    'Profile &gt; Account Settings &gt; Delete account',
+    '14-day grace period',
+    'We do not sell personal information.',
+  ]) {
+    assert.ok(html.includes(text), `privacy page should include: ${text}`);
   }
   assert.doesNotMatch(html, /No data collected|we collect no data/i);
 });
 
-test('deletion page does not claim instant or automated success', async () => {
+test('terms page states points, downloads, rewards, giveaways and claims', async () => {
+  const html = await read('terms/index.html');
+  for (const text of [
+    'Do not represent money or stored cash value.',
+    'Each paid download requires a new Points deduction, including repeat downloads of the same image.',
+    'A rejected request does not refund the Points spent on the download.',
+    'Joining a giveaway does not require buying an image, spending Points or watching an advertisement.',
+    'Claim Your Prize until the claim deadline',
+    'interstitial ads that may appear when you open a giveaway',
+  ]) {
+    assert.ok(html.includes(text), `terms page should include: ${text}`);
+  }
+});
+
+test('legal pages carry the new date, both languages, and no outdated or placeholder text', async () => {
+  const pages = {
+    'privacy/index.html': ['Last updated: October 25, 2026', '15. Contact Us'],
+    'terms/index.html': ['Last updated: October 25, 2026', '18. Contact'],
+    'ar/privacy/index.html': ['آخر تحديث: 25 أكتوبر 2026', 'سياسة الخصوصية', '15. تواصل معنا'],
+    'ar/terms/index.html': ['آخر تحديث: 25 أكتوبر 2026', 'الشروط والأحكام', '18. التواصل'],
+    'delete-account/index.html': ['Profile &gt; Account Settings &gt; Delete account', '14-day grace period'],
+    'ar/delete-account/index.html': ['إعدادات الحساب', '14 يوماً'],
+  };
+  for (const [page, texts] of Object.entries(pages)) {
+    const html = await read(page);
+    for (const text of texts) assert.ok(html.includes(text), `${page} should include: ${text}`);
+    assert.ok(html.includes('mohamed.elsamman.dev@gmail.com'), `${page} should show the support email`);
+    // The previous app model (phone-number identities on Supabase) is gone.
+    assert.doesNotMatch(
+      html,
+      /Supabase|anonymous[- ]auth|device-scoped|phone number is normalized|12 October 2026|12 أكتوبر 2026/i,
+      page,
+    );
+    assert.doesNotMatch(html, /TODO|TBD|lorem ipsum|\[placeholder\]/i, page);
+  }
+});
+
+test('deletion page explains in-app deletion and never claims instant success', async () => {
   const html = await read('delete-account/index.html');
-  assert.match(html, /no public phone-number deletion form/i);
-  assert.match(html, /phone number by itself is not proof of identity/i);
+  assert.match(html, /Delete your account in the app/);
+  assert.match(html, /Confirm with your password/);
+  assert.match(html, /request deletion by email/i);
   assert.doesNotMatch(html, /your data has been deleted|deleted instantly/i);
+  assert.doesNotMatch(html, /no in-app deletion control/i);
 });
 
 test('sitemap and crawler rules expose the public site and do not block crawlers', async () => {

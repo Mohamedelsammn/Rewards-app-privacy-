@@ -1,5 +1,6 @@
 export type Lang = 'en' | 'ar';
-export type Section = { title: string; paragraphs?: string[]; bullets?: string[] };
+/** A legal section. An empty title marks the untitled introduction; `after` follows the bullets. */
+export type Section = { title: string; paragraphs?: string[]; bullets?: string[]; after?: string[] };
 
 export const site = {
   name: 'Creative Rewards App',
@@ -32,9 +33,9 @@ export const copy: Record<Lang, {
     nav: { home: 'Home', privacy: 'Privacy', terms: 'Terms', contact: 'Contact', about: 'About', language: 'Language', menu: 'Open navigation' },
     seo: {
       home: { title: 'Creative Rewards App — Discover Giveaways', description: 'Browse giveaway campaigns, review each organizer’s rules, and keep track of your participation in one app.' },
-      privacy: { title: 'Privacy Policy — Creative Rewards App', description: 'How Creative Rewards App handles participant profile, giveaway, device, notification, and advertising information.' },
-      terms: { title: 'Terms & Conditions — Creative Rewards App', description: 'Terms for using Creative Rewards App and joining campaigns managed by individual organizers.' },
-      'delete-account': { title: 'Data Deletion — Creative Rewards App', description: 'How to request deletion of participant profile and participation data associated with Creative Rewards App.' },
+      privacy: { title: 'Privacy Policy — Creative Rewards App', description: "How Creative Rewards handles account, Points, image, reward request, giveaway, device, notification and advertising information." },
+      terms: { title: 'Terms & Conditions — Creative Rewards App', description: "Terms for using Creative Rewards: Points, image downloads, image rewards, giveaways, prize claims and advertising." },
+      'delete-account': { title: 'Data Deletion — Creative Rewards App', description: "How to delete your Creative Rewards account in the app or request deletion by email." },
       contact: { title: 'Contact & Support — Creative Rewards App', description: 'Contact Creative Rewards App support about the app, privacy, or data deletion.' },
       about: { title: 'About — Creative Rewards App', description: 'Learn how participants and giveaway organizers use Creative Rewards App.' },
     },
@@ -58,63 +59,374 @@ export const copy: Record<Lang, {
       ctaTitle: 'Read the campaign before joining.', ctaBody: 'Each organizer is responsible for its giveaway terms, winner selection, and prize fulfillment.', browse: 'View the app on Google Play',
     },
     privacy: [
-      { title: 'Who this notice covers', paragraphs: [`This Privacy Policy explains how the Creative Rewards App mobile application (Android package com.creativehub.rewardsapp) handles information when you use it. The app is operated by ${site.legalOperatorName || 'the operator responsible for this application'}. This notice does not state a separate registered company or personal legal name. Privacy questions and requests can be sent to the contact listed below.`] },
-      { title: 'Information collected or used', paragraphs: ['When a participant registers, the app asks for a full name, phone number, and country. The phone number is normalized for the selected country. The source code does not show a date-of-birth field or phone one-time-password verification.', 'The service associates a participant profile with an internal identifier and a device-scoped Supabase anonymous-auth identity. For a giveaway entry, it stores the giveaway, server-assigned participation number and sequence, and creation time. A reveal timestamp may also be stored.', 'The app and its providers may process device, network, diagnostic, security, and service-operation information. The precise server logs, retention, and provider-side data fields require confirmation against production configuration.'] },
-      { title: 'Phone numbers and participation', paragraphs: ['A phone number is used as part of participant registration and to prevent a phone from being linked to more than one participant identity. In the current code, registration does not verify control of the number with an SMS code. A phone number by itself is not a secure credential and must not be treated as proof that someone owns a participant identity.', 'Entries and participation numbers are created or retrieved through server-authoritative app calls. My Giveaways retrieves entries for the currently authenticated device identity; the website does not provide a public lookup by phone number. Organizers may display winner information in the app as part of campaign results.'] },
-      { title: 'Local storage and identifiers', paragraphs: ['The app stores the participant name, phone number, country code, internal profile ID, selected language/role, and anonymous-session refresh token in device-protected storage. Supabase Auth also persists its session. App caches may store giveaway, category, and My Giveaways data to support app performance. Clearing the app or changing devices can affect access to a device-bound participant identity.'] },
-      { title: 'Supabase processing', paragraphs: ['The mobile app uses Supabase for authentication and application data, including participant profiles, device links, giveaways, participations, and related records. Giveaway images use the app’s storage service. The project region, live access policies, logging, backup retention, and deployed database configuration could not be verified during the source audit; do not infer a specific retention duration or hosting region from this notice.'] },
-      { title: 'Firebase Cloud Messaging', paragraphs: ['The app integrates Firebase Cloud Messaging for push notifications. When notifications are enabled, a device messaging token may be associated with the participant device record so notifications can be delivered. Firebase and Google may process message delivery, device, and diagnostic information under their applicable terms. You can manage notification permission in your device settings.'] },
-      { title: 'Google AdMob and advertising identifiers', paragraphs: ['The app integrates Google Mobile Ads for Banner, App Open, Interstitial, and optional Rewarded ad formats. The app requests non-personalized ads in its current source. This does not mean that no device or ad-related data is processed: Google’s advertising SDK may process IP address, device and advertising identifiers, approximate location derived from IP, ad interactions, delivery/frequency information, and diagnostics under Google’s terms and the consent choices that apply.', 'Rewarded ads are optional. A user can continue with the normal free participation path without watching one; watching does not create an extra entry or increase winning odds in the app’s participation flow.'] },
-      { title: 'Consent and privacy choices', paragraphs: ['The app source integrates Google’s User Messaging Platform (UMP), checks whether ad requests may be made, and exposes a privacy-options control when the SDK requires one. The consent messages and regional configuration managed in the advertising account were not available for this audit. Review or change choices using the in-app advertising privacy options where shown and the device controls available to you.'] },
-      { title: 'How information is used', bullets: ['Create and maintain a participant profile and device-bound session.', 'Check campaign eligibility and create or retrieve a participation entry.', 'Show joined giveaways, participation numbers, campaign results, and relevant notifications.', 'Protect the service, diagnose failures, and prevent duplicate or abusive participation.', 'Deliver, measure, and limit the frequency of ads subject to applicable choices and provider settings.'] },
-      { title: 'Sharing and service providers', paragraphs: ['Information is processed by the app’s backend and the providers needed to run it, including Supabase, Firebase/Google, and Google Mobile Ads. Providers may process information for service delivery, security, diagnostics, advertising, and legal compliance under their own terms. The app does not send participant names or phone numbers to Google for ad targeting in the reviewed code; advertising SDK processing still occurs independently. Campaign organizers may access campaign management and results information available to their authorized account.'] },
-      { title: 'Security', paragraphs: ['The app uses Supabase authenticated sessions for participant-scoped requests and stores selected identity values in platform secure storage. Server-side functions handle participation creation and profile changes. No system can guarantee absolute security. The deployed backend security rules, access logs, and incident practices were not independently verified during this audit.'] },
-      { title: 'Retention', paragraphs: ['The source does not establish a fixed retention period or backup-expiry schedule. Participant and campaign records may remain while needed to operate the campaign, resolve results, prevent abuse, meet legal obligations, or handle disputes. You may request deletion; a request may be limited where records must be retained for these purposes. The operator should publish a specific retention schedule after confirming production backups and legal requirements.'] },
-      { title: 'Your choices and requests', paragraphs: ['You can edit your participant name, phone number, and country in the app. You can turn off notifications in device settings and manage advertising privacy choices in the app when that option is available. You can request deletion using the instructions on the Data Deletion page or email support. A request is reviewed before action; providing a phone number alone does not prove identity.'] },
-      { title: 'Data deletion', paragraphs: ['The checked-in app source contains a server-side participant self-deletion function, but the database migration and its production deployment could not be verified, and no in-app control calling it was found in the reviewed source. For now, use the support request process described on the Data Deletion page. Do not send sensitive information unless support asks for what is necessary to verify the request.'] },
-      { title: 'Children and age eligibility', paragraphs: ['The registration flow reviewed does not collect date of birth or implement an app-wide age gate. Campaign eligibility may set its own age or country rules. A person should not participate unless they are legally allowed to do so and meet the campaign’s terms; a parent or guardian should contact support if a child’s information was submitted. The current Google Play listing shows an Everyone content rating, which is not a substitute for age-eligibility controls or legal review.'] },
-      { title: 'International processing', paragraphs: ['Supabase, Firebase, and Google may process information in countries other than where you live. The production Supabase region and contractual transfer details were not confirmed in the source audit. Provider privacy notices explain their practices: <a href="https://supabase.com/privacy" rel="noreferrer">Supabase Privacy</a>, <a href="https://firebase.google.com/support/privacy" rel="noreferrer">Firebase Privacy and Security</a>, and <a href="https://policies.google.com/privacy" rel="noreferrer">Google Privacy Policy</a>.'] },
-      { title: 'Changes to this policy', paragraphs: ['We may update this notice as the app or its data practices change. The effective date below identifies the current website copy. Material updates should be reflected here and, where appropriate, in the app or store listing.'] },
-      { title: 'Contact', paragraphs: [`For privacy, support, or deletion requests, email <a href="mailto:${site.supportEmail}">${site.supportEmail}</a>. Include “Creative Rewards App” in the subject. The app operator’s legal name has not been stated in this notice; contact details do not establish a registered legal entity.`] },
+      {
+        "title": "",
+        "paragraphs": [
+          "Creative Rewards (\"we\", \"our\" or \"us\") respects your privacy and protects the information you provide when you use our mobile application.",
+          "This Privacy Policy explains what information we collect, how we use it, how it is stored, and the choices you have.",
+          "By using Creative Rewards, you acknowledge the practices described in this policy."
+        ]
+      },
+      {
+        "title": "1. Information We Collect",
+        "paragraphs": [
+          "<strong class=\"legal-subheading\">Account information</strong>",
+          "When you create an account, we collect your email address (confirmed with a one-time code sent to it), the password you choose, your selected avatar and your preferred language. You can also add a display name. Each sign-in session is linked to a device name so you can review and end your sessions.",
+          "<strong class=\"legal-subheading\">Platform account identifiers</strong>",
+          "You may choose to provide identifiers for supported game or social platforms, such as a PUBG Player ID, a Riot ID (Name#TAG), or an Instagram, TikTok or Facebook username. You can keep them in Saved Accounts, and you enter one when you request the reward linked to an image. The app shows saved identifiers masked, and we record your agreement when you save one.",
+          "We never ask for your game or social-media passwords, login codes or cookies.",
+          "<strong class=\"legal-subheading\">Points and app activity</strong>",
+          "We keep your Points balance and Points transactions (for example Points earned from rewarded ads and Points spent on downloads), the images you unlock and download, and your reward requests with their status.",
+          "<strong class=\"legal-subheading\">Giveaway participation</strong>",
+          "When you join a giveaway, we store your entry, the participation number assigned by our server, the giveaway and its result.",
+          "If you win, we ask for contact details, such as a phone number and city, so we can deliver your prize.",
+          "<strong class=\"legal-subheading\">Device and technical information</strong>",
+          "To send notifications, the app registers your device with a push-notification token, the platform, the app version and your language. Our servers may keep technical request logs, such as IP address and time, to operate and protect the service. The app does not include a separate analytics or crash-reporting service.",
+          "<strong class=\"legal-subheading\">Advertising information</strong>",
+          "The app shows Google AdMob ads: optional rewarded ads that earn Points in the Wallet, interstitial ads that may appear when you open a giveaway's details, and app-open ads. The app requests non-personalized ads. Google may still process device and advertising identifiers, IP address, approximate location derived from it, and ad interactions, under its own policies and the consent choices that apply to you."
+        ]
+      },
+      {
+        "title": "2. How We Use Information",
+        "paragraphs": [
+          "We use the information to:"
+        ],
+        "bullets": [
+          "Create, authenticate and manage accounts.",
+          "Show and maintain Points balances and transaction history.",
+          "Provide images and downloads.",
+          "Keep saved platform identifiers and process the reward requests you make.",
+          "Manage giveaway participation and publish results.",
+          "Contact winners and arrange prize delivery.",
+          "Send notifications about your account and giveaways.",
+          "Investigate technical problems and improve performance.",
+          "Prevent duplicate transactions, fraud and misuse.",
+          "Meet legal obligations."
+        ]
+      },
+      {
+        "title": "3. Images and Downloads",
+        "paragraphs": [
+          "Creative Rewards offers digital images to browse and download.",
+          "Some images are free. Paid images cost Points for every download, including repeat downloads of the same image, and the cost is shown before you confirm.",
+          "We record the image, the Points spent and your download history to run the service, provide support and keep accurate transaction records.",
+          "Downloaded images are saved to your device's photo gallery and stay there until you delete them."
+        ]
+      },
+      {
+        "title": "4. Platform Account Information",
+        "paragraphs": [
+          "Providing a platform identifier is not the same as signing in to that platform.",
+          "Identifiers are used to manage your saved accounts and to deliver the rewards you request, such as in-game currency linked to an image. Authorized administrators can see the identifier of a request when they process it, and when needed for security or support.",
+          "You can edit or delete saved identifiers in Profile &gt; Saved Accounts. An identifier you already submitted with a reward request stays with that request."
+        ]
+      },
+      {
+        "title": "5. Giveaways and Winners",
+        "paragraphs": [
+          "Eligible users can join giveaways in Creative Rewards.",
+          "We store giveaway participation, winner status, and the contact details winners submit.",
+          "Winner contact details are used to verify the claim, communicate with the winner and deliver the prize. You can submit them from the winner announcement or later from the giveaway in My Giveaways, until the claim deadline.",
+          "If you do not submit the requested details, we may be unable to deliver the prize."
+        ]
+      },
+      {
+        "title": "6. Points and Advertisements",
+        "paragraphs": [
+          "Creative Rewards uses an in-app Points system. Points are earned through supported activities, including optional rewarded ads, and are spent on eligible features such as image downloads.",
+          "Points from a rewarded ad are credited only after our server verifies that the ad was completed. We keep transaction records to track Points credited and spent and to prevent duplicate or unauthorized activity.",
+          "Joining a giveaway never requires watching an ad.",
+          "Ads are provided by Google AdMob, whose processing of information is governed by Google's privacy policy and the applicable consent requirements."
+        ]
+      },
+      {
+        "title": "7. Notifications",
+        "paragraphs": [
+          "With your permission, we send notifications about giveaway updates, winner announcements, your orders and other account events.",
+          "You can manage notification permission in your device settings."
+        ]
+      },
+      {
+        "title": "8. Sharing of Information",
+        "paragraphs": [
+          "We do not sell personal information.",
+          "We share information only with:"
+        ],
+        "bullets": [
+          "Service providers that host and operate our servers, and Google Firebase Cloud Messaging, which delivers notifications.",
+          "Google AdMob, which processes advertising information as described above.",
+          "Authorized administrators who need it to operate the service and handle your requests.",
+          "Authorities or other parties when the law requires disclosure."
+        ],
+        "after": [
+          "Any sharing is limited to these operational purposes and legal obligations."
+        ]
+      },
+      {
+        "title": "9. Data Security",
+        "paragraphs": [
+          "We use technical and organizational safeguards to protect information against unauthorized access, alteration, disclosure or loss. Administrative access is limited by role.",
+          "On your device, sign-in tokens are kept in secure storage and are excluded from device backups.",
+          "No method of storage or transmission over the internet is completely secure."
+        ]
+      },
+      {
+        "title": "10. Data Retention",
+        "paragraphs": [
+          "We keep personal information for as long as needed to operate the app, maintain your account, support transactions, run giveaways, resolve disputes, prevent misuse and meet legal obligations.",
+          "When you delete your account, it is removed after a 14-day grace period, together with its Points, orders and giveaway entries. Limited records may be kept longer where the law requires or permits it, for example to prevent fraud or handle disputes."
+        ]
+      },
+      {
+        "title": "11. Your Privacy Choices",
+        "paragraphs": [
+          "Depending on the features available and applicable law, you can:"
+        ],
+        "bullets": [
+          "Review and update your profile information.",
+          "Edit or delete saved platform identifiers.",
+          "Manage notification permission.",
+          "Review advertising privacy choices in the app when the consent form offers them.",
+          "Request access to or correction of your personal information.",
+          "Delete your account in the app: Profile > Account Settings > Delete account. You confirm with your password, the account is deleted after 14 days, and signing in again during that time cancels the request."
+        ],
+        "after": [
+          "You can also request deletion by email at the address below. We may need to verify that the request comes from the account owner."
+        ]
+      },
+      {
+        "title": "12. Children's Privacy",
+        "paragraphs": [
+          "Creative Rewards is not intended for children below the minimum age permitted by applicable law without any required parent or guardian authorization.",
+          "Where a giveaway has additional age requirements, they are stated in its rules.",
+          "If we learn that personal information was collected in violation of children's privacy requirements, we will take appropriate steps to address it."
+        ]
+      },
+      {
+        "title": "13. Third-Party Services",
+        "paragraphs": [
+          "We rely on Google Firebase (notifications) and Google AdMob (advertising), which process information under their own privacy policies.",
+          "We are not responsible for the independent privacy practices of unrelated external apps or services, including the game and social platforms whose identifiers you provide."
+        ]
+      },
+      {
+        "title": "14. Changes to This Privacy Policy",
+        "paragraphs": [
+          "We may update this Privacy Policy when the app, our practices or legal requirements change. The updated version will show a new date and, where required, we will give additional notice."
+        ]
+      },
+      {
+        "title": "15. Contact Us",
+        "paragraphs": [
+          "For questions about privacy, your personal information or deletion requests, contact us:"
+        ],
+        "bullets": [
+          "Application: Creative Rewards",
+          "Email: mohamed.elsamman.dev@gmail.com"
+        ]
+      }
     ],
     terms: [
-      { title: 'Acceptance and the service', paragraphs: ['These Terms apply to the Creative Rewards App (Android package com.creativehub.rewardsapp). By using the app, you agree to these Terms and the rules displayed for each campaign. If you do not agree, do not use the app.'] },
-      { title: 'Eligibility', paragraphs: ['You must be legally permitted to use the app and satisfy the age, country, and other eligibility conditions stated by the organizer for the specific campaign. Do not enter a giveaway if local law or that campaign’s rules prohibit your participation. The app registration flow does not itself collect a birth date or verify age.'] },
-      { title: 'Campaign rules and organizers', paragraphs: ['Giveaways are created and managed by individual administrators or organizers. The campaign page and its rules govern the prize, entry window, eligibility, number limits, selection method, and any other campaign conditions. The app provides campaign and participation tools; it does not independently verify every organizer’s prize, claims, eligibility rules, or ability to deliver a prize.', 'The organizer is responsible for providing accurate campaign information, applying the published rules, selecting and announcing winners as specified, contacting the winner, and arranging prize fulfillment. Contact the organizer through the campaign information for campaign-specific questions.'] },
-      { title: 'Participation and numbers', paragraphs: ['A participant may register with a name, phone number, and country. The source implementation limits a participant identity to one entry per giveaway and returns the existing entry if the same identity tries again. The backend assigns the participation number; users must not attempt to manipulate the number, create duplicate identities, or bypass campaign restrictions.', 'An entry is valid only after the service confirms it. Scheduled or ended campaigns do not accept entries outside their eligible period. The app’s optional Rewarded Ad is not a condition of free participation and does not add entries or improve odds.'] },
-      { title: 'Winner selection and results', paragraphs: ['The organizer controls winner selection according to the method stated in the campaign rules. The app supports organizer-managed selection and result display; these Terms do not promise that every selection is random or independently audited. A participation number is an identifier for the entry, not a guarantee of winning. Results and winner information may be announced in the app or by notification.'] },
-      { title: 'Prizes', paragraphs: ['Prize availability, description, delivery, taxes, warranties, and any collection requirements are governed by the campaign rules and the organizer’s responsibilities. The app is not the prize supplier unless a campaign explicitly identifies it as the organizer. No particular prize or delivery outcome is guaranteed by the platform.'] },
-      { title: 'Fraud and misuse', bullets: ['Do not use false, stolen, or another person’s information.', 'Do not automate entries, exploit defects, disrupt the service, or evade campaign limits.', 'Do not interfere with another participant, organizer, or winner.', 'We or an organizer may investigate suspected abuse and restrict access or entries consistent with applicable law and the campaign rules.'] },
-      { title: 'Advertising', paragraphs: ['The app may display Banner, App Open, Interstitial, and optional Rewarded advertisements provided through Google Mobile Ads. Rewarded ads require an explicit choice, and users may continue without watching. Viewing an ad does not provide an additional entry or higher winning chance under the current app flow. Advertising is subject to provider terms and applicable privacy choices.'] },
-      { title: 'Availability and changes', paragraphs: ['We may maintain, update, suspend, or discontinue parts of the app. Network, device, backend, or provider failures can affect availability. Campaign deadlines and the server’s recorded status determine whether an entry can be accepted; a device clock does not override them.'] },
-      { title: 'Intellectual property', paragraphs: ['The app software, branding, and site content belong to their respective owners or licensors. Campaign images, names, and prize marks may belong to organizers or third parties. You may use the service for its intended personal purpose, subject to these Terms and applicable law.'] },
-      { title: 'Liability', paragraphs: ['To the extent permitted by applicable law, the app is provided without a promise of uninterrupted availability or that a user will win a giveaway. Nothing here removes rights or remedies that cannot lawfully be excluded. Organizers remain responsible for their campaign representations and prize fulfillment.'] },
-      { title: 'Suspension and termination', paragraphs: ['Access may be restricted for security, legal, service-integrity, or serious terms violations. Organizers may disqualify entries only under the applicable campaign rules and law. Ending access to the app does not erase records that must be retained for campaign, legal, security, or dispute purposes; see the Privacy Policy and deletion process.'] },
-      { title: 'Updates and contact', paragraphs: [`We may revise these Terms when the service changes. Continued use after an updated version is posted means the revised Terms apply to future use where allowed by law. Questions can be sent to <a href="mailto:${site.supportEmail}">${site.supportEmail}</a>.`] },
+      {
+        "title": "",
+        "paragraphs": [
+          "Welcome to Creative Rewards.",
+          "These Terms &amp; Conditions govern your use of the Creative Rewards mobile application, including image browsing, Points, downloads, image rewards, giveaways, account features and related services.",
+          "By accessing or using the application, you agree to these Terms &amp; Conditions."
+        ]
+      },
+      {
+        "title": "1. Use of the Application",
+        "paragraphs": [
+          "Creative Rewards provides digital images, an in-app Points system, rewards linked to some images, giveaway participation and related account features.",
+          "You must provide accurate information when a feature requires it and use the application lawfully.",
+          "We may update, change, suspend or discontinue features where reasonably necessary."
+        ]
+      },
+      {
+        "title": "2. User Accounts",
+        "paragraphs": [
+          "You are responsible for activity on your account and for keeping your login details secure.",
+          "You agree not to impersonate another person, create accounts for fraudulent purposes or try to bypass the application's security.",
+          "We may restrict accounts involved in misuse, fraud, unauthorized automation or violations of these Terms."
+        ]
+      },
+      {
+        "title": "3. Points System",
+        "paragraphs": [
+          "Creative Rewards uses virtual Points for supported in-app activities. Points can be earned through eligible activities, including optional rewarded advertisements. The number of Points for an activity may change with the application's configuration.",
+          "Points:"
+        ],
+        "bullets": [
+          "Are virtual units used only within Creative Rewards.",
+          "Do not represent money or stored cash value.",
+          "Cannot be withdrawn as cash.",
+          "Cannot be transferred between users unless a feature expressly allows it.",
+          "Are deducted when you confirm an eligible activity, such as a paid download.",
+          "Are subject to fraud prevention and transaction verification."
+        ],
+        "after": [
+          "Points are credited only after our server has verified the activity. Manipulating Points balances, advertising events or transaction records is prohibited."
+        ]
+      },
+      {
+        "title": "4. Digital Images",
+        "paragraphs": [
+          "Creative Rewards lets you browse and download digital images. Some images are free; others cost a stated number of Points.",
+          "The cost is shown before you confirm a paid download. Each paid download requires a new Points deduction, including repeat downloads of the same image. Please review the cost before confirming.",
+          "If saving a paid download fails, you can retry for a short time without a new charge. After that, downloading again costs Points again.",
+          "Downloading an image does not transfer ownership of its intellectual-property rights. Unless expressly authorized, you may not redistribute, resell, sublicense or commercially exploit images obtained through Creative Rewards."
+        ]
+      },
+      {
+        "title": "5. Image Rewards",
+        "paragraphs": [
+          "Some images include a linked reward, such as in-game currency for a supported game.",
+          "After downloading such an image, you can request the reward by entering the account identifier that should receive it. The request appears in My Orders with its status: Pending, Processing, Completed or Rejected.",
+          "Requests are reviewed and fulfilled by our team. You are responsible for entering the correct identifier. A rejected request does not refund the Points spent on the download."
+        ]
+      },
+      {
+        "title": "6. Saved Platform Accounts",
+        "paragraphs": [
+          "You can save identifiers for supported platforms, such as game account IDs or social-media usernames.",
+          "You are responsible for providing accurate identifiers and for having permission to use them.",
+          "Do not submit passwords, private login codes or another person's information without authorization.",
+          "Saved identifiers may be linked to your reward requests, as explained in the Privacy Policy."
+        ]
+      },
+      {
+        "title": "7. Giveaways",
+        "paragraphs": [
+          "Creative Rewards may offer promotional giveaways to eligible users. Eligibility, participation period, prize details and conditions may differ between giveaways.",
+          "Participation does not guarantee winning. You must follow the rules shown for each giveaway, including any steps it asks you to complete before joining.",
+          "Joining a giveaway does not require buying an image, spending Points or watching an advertisement.",
+          "Only entries confirmed by our server, with the participation number it assigns, are accepted."
+        ]
+      },
+      {
+        "title": "8. Giveaway Selection and Results",
+        "paragraphs": [
+          "Winners are selected or confirmed according to each giveaway's rules, using the records kept by the application.",
+          "An ended giveaway may remain visible for information. You can see your participation and results in the app.",
+          "We may investigate suspected abuse, duplicate entries or rule violations."
+        ]
+      },
+      {
+        "title": "9. Winner Contact Information and Prize Claims",
+        "paragraphs": [
+          "If you win, the application may show a winner announcement and celebration.",
+          "You do not have to submit your contact details immediately. You can return to the giveaway in My Giveaways and use Claim Your Prize until the claim deadline.",
+          "You must provide accurate information when claiming a prize. Not submitting it before the deadline may affect your ability to receive the prize, according to the giveaway's rules.",
+          "Prize delivery, verification and related conditions follow each giveaway's terms."
+        ]
+      },
+      {
+        "title": "10. Notifications",
+        "paragraphs": [
+          "The application may send notifications about giveaways, winner announcements, orders, Points, account events and service updates.",
+          "Delivery depends on device permission, network connection and service availability. A missed or delayed notification does not change an officially recorded giveaway result."
+        ]
+      },
+      {
+        "title": "11. Advertisements",
+        "paragraphs": [
+          "The application shows advertisements: optional rewarded videos in the Wallet, interstitial ads that may appear when you open a giveaway's details, and app-open ads.",
+          "A rewarded ad gives Points only when our server confirms that it was completed and that you are eligible. Closing or skipping it may result in no Points.",
+          "Ad availability may vary by device, country and service conditions."
+        ]
+      },
+      {
+        "title": "12. Prohibited Activities",
+        "paragraphs": [
+          "You agree not to:"
+        ],
+        "bullets": [
+          "Manipulate application requests or Points transactions.",
+          "Exploit bugs to obtain unauthorized benefits.",
+          "Use automated accounts or bots to abuse participation systems.",
+          "Submit fraudulent account information.",
+          "Circumvent participation limits or eligibility rules.",
+          "Interfere with the application's security or infrastructure.",
+          "Redistribute protected content without authorization."
+        ],
+        "after": [
+          "We may investigate suspected violations and take proportionate action where the law allows."
+        ]
+      },
+      {
+        "title": "13. Availability and Technical Issues",
+        "paragraphs": [
+          "We aim to keep the service reliable but cannot guarantee uninterrupted availability. Network outages, maintenance, third-party failures, device limitations or software defects may temporarily affect the application.",
+          "If a technical problem affects a recorded activity, you can contact support for a review."
+        ]
+      },
+      {
+        "title": "14. Intellectual Property",
+        "paragraphs": [
+          "The Creative Rewards application, branding, interface, software and original content are protected by intellectual-property laws.",
+          "Third-party names, trademarks and content belong to their owners. Access to content through the application grants no rights beyond those expressly given."
+        ]
+      },
+      {
+        "title": "15. Account Restrictions and Termination",
+        "paragraphs": [
+          "We may restrict or suspend access where needed to address fraud, security incidents, legal requirements or material violations of these Terms.",
+          "You can delete your account in the app (Profile &gt; Account Settings &gt; Delete account) or by contacting support. The account is deleted after a 14-day grace period; signing in during that period cancels the request. Legal retention obligations may continue after closure."
+        ]
+      },
+      {
+        "title": "16. Disclaimer and Liability",
+        "paragraphs": [
+          "Creative Rewards is provided subject to applicable laws and consumer-protection rights. While we aim for accuracy and reliability, features may occasionally be unavailable or affected by technical issues.",
+          "Nothing in these Terms excludes rights or liabilities that cannot lawfully be excluded."
+        ]
+      },
+      {
+        "title": "17. Changes to These Terms",
+        "paragraphs": [
+          "We may update these Terms when features, operating requirements or legal obligations change. The updated version will show a new date and, where required, material changes will be communicated to users."
+        ]
+      },
+      {
+        "title": "18. Contact",
+        "paragraphs": [
+          "For questions, help or account requests:"
+        ],
+        "bullets": [
+          "Application: Creative Rewards",
+          "Email: mohamed.elsamman.dev@gmail.com"
+        ]
+      }
     ],
     deletion: {
-      intro: 'You can request deletion of the participant profile and personal information associated with Creative Rewards App without installing or opening the app. Participant identities are linked to a device-scoped Supabase session; they are not conventional email/password participant accounts.',
-      stepsTitle: 'Request deletion by email',
-      steps: [`Email <a href="mailto:${site.supportEmail}?subject=Creative%20Rewards%20App%20data%20deletion">${site.supportEmail}</a> with the subject “Creative Rewards App data deletion”.`, 'Tell support that you want your participant profile and associated personal data deleted. Do not include a full phone number or identity document in your first email.', 'Support may ask for limited additional information to verify the request. A phone number by itself is not proof of identity. Do not send passwords or authentication tokens.', 'Support will review the request, explain any information that must be retained, and confirm the result by email.'],
-      verifyTitle: 'Verification and manual handling',
-      verify: 'There is no public phone-number deletion form or automated website endpoint. The checked-in app includes a server-side deletion function, but its migration is marked as not applied and no in-app deletion control was found in the audited source. Requests therefore require support review and a safe ownership check before any record is changed. Do not treat a request as complete until support confirms it.',
-      deleteTitle: 'What may be deleted',
-      deleteText: 'A verified participant deletion may remove the participant profile, linked device record, participation entries, related notifications, and the linked anonymous authentication identity, if that server workflow is deployed and approved. Deleting an entry may affect published winner records or campaign totals. Records required for legal compliance, security, disputes, or accounting may be retained as permitted by law. Backups and provider-side retention depend on production settings that have not been verified; no fixed completion or backup-expiry time is promised here.',
-      contact: 'For privacy questions or deletion requests, contact support at',
-      noAutomation: 'Administrator accounts are separate email/password accounts. This public request route is for participant data only; admin-account deletion needs a separately verified process.',
+      "intro": "You can delete your Creative Rewards account and its personal data in the app, or ask support to do it by email.",
+      "stepsTitle": "Delete your account in the app",
+      "steps": [
+        "Open Creative Rewards and sign in.",
+        "Go to Profile &gt; Account Settings &gt; Delete account.",
+        "Confirm with your password.",
+        "Your account is deleted after a 14-day grace period. Signing in again during that time cancels the request."
+      ],
+      "verifyTitle": "Verification",
+      "verify": "Only the account owner can delete an account: in the app you confirm with your password, and by email we may ask you to prove that you own the account. We never ask for your password by email.",
+      "deleteTitle": "What is deleted",
+      "deleteText": "After the grace period, the account is deleted together with its Points, orders and giveaway entries. Limited records may be kept longer where the law requires or permits it, for example to prevent fraud or handle disputes.",
+      "contact": "If you cannot use the app, request deletion by email at",
+      "noAutomation": "Email requests are handled manually by support. This website does not delete data by itself."
     },
     contact: { intro: 'Contact the Creative Rewards App support team for help with the app, privacy questions, or data deletion requests.', support: 'General support', privacy: 'Privacy questions', deletion: 'Data deletion', response: 'Please include the app name and a short description. Do not include passwords, session tokens, or unnecessary sensitive information. Support may request additional details to verify a deletion request.' },
     about: { intro: 'Creative Rewards App brings participant browsing and giveaway organizer tools into one mobile app.', title: 'For participants and organizers', body: 'Participants can browse campaigns, review each organizer’s rules, join eligible giveaways, view their participation numbers, and follow published results. Authorized administrators can create campaigns and manage their giveaway activity. Each organizer is responsible for its own campaign terms and prize fulfillment.' },
-    labels: { lastUpdated: 'Last updated: 12 October 2026', toc: 'On this page', backHome: 'Back to home', appName: 'Application', operator: 'Operator', notLegalEntity: 'Creative Rewards App is the application name. This notice does not identify a separate registered company or legal entity.', contactUs: 'Contact support', external: 'Google Play listing' },
+    labels: { lastUpdated: "Last updated: October 25, 2026", toc: 'On this page', backHome: 'Back to home', appName: 'Application', operator: 'Operator', notLegalEntity: 'Creative Rewards App is the application name. This notice does not identify a separate registered company or legal entity.', contactUs: 'Contact support', external: 'Google Play listing' },
   },
   ar: {
     language: 'ar', direction: 'rtl', switchLabel: 'English',
     nav: { home: 'الرئيسية', privacy: 'الخصوصية', terms: 'الشروط', contact: 'تواصل معنا', about: 'عن التطبيق', language: 'اللغة', menu: 'فتح القائمة' },
     seo: {
       home: { title: 'Creative Rewards App — اكتشف المسابقات', description: 'تصفّح حملات المسابقات، واقرأ شروط كل منظم، وتابع مشاركاتك من تطبيق واحد.' },
-      privacy: { title: 'سياسة الخصوصية — Creative Rewards App', description: 'كيفية تعامل Creative Rewards App مع بيانات الملف الشخصي والمشاركة والجهاز والإعلانات.' },
-      terms: { title: 'الشروط والأحكام — Creative Rewards App', description: 'شروط استخدام التطبيق والمشاركة في الحملات التي يديرها المنظمون.' },
-      'delete-account': { title: 'حذف البيانات — Creative Rewards App', description: 'كيفية طلب حذف الملف الشخصي وبيانات المشاركة المرتبطة بالتطبيق.' },
+      privacy: { title: 'سياسة الخصوصية — Creative Rewards App', description: "كيف يتعامل Creative Rewards مع معلومات الحساب والنقاط والصور وطلبات المكافآت والسحوبات والجهاز والإشعارات والإعلانات." },
+      terms: { title: 'الشروط والأحكام — Creative Rewards App', description: "شروط استخدام Creative Rewards: النقاط وتنزيل الصور ومكافآت الصور والسحوبات والمطالبة بالجوائز والإعلانات." },
+      'delete-account': { title: 'حذف البيانات — Creative Rewards App', description: "كيفية حذف حسابك في Creative Rewards من التطبيق أو طلب الحذف عبر البريد الإلكتروني." },
       contact: { title: 'الدعم والتواصل — Creative Rewards App', description: 'تواصل مع دعم Creative Rewards App بشأن التطبيق أو الخصوصية أو حذف البيانات.' },
       about: { title: 'عن التطبيق — Creative Rewards App', description: 'تعرف على تجربة المشاركين ومنظمي المسابقات في التطبيق.' },
     },
@@ -137,54 +449,365 @@ export const copy: Record<Lang, {
       ctaTitle: 'اقرأ الشروط قبل المشاركة.', ctaBody: 'كل منظم مسؤول عن شروط مسابقته وآلية اختيار الفائز وتسليم الجائزة.', browse: 'عرض التطبيق على Google Play',
     },
     privacy: [
-      { title: 'نطاق هذه السياسة', paragraphs: [`توضح سياسة الخصوصية كيفية تعامل تطبيق Creative Rewards App للأندرويد (معرّف الحزمة com.creativehub.rewardsapp) مع المعلومات عند استخدامه. يشغّل التطبيق ${site.legalOperatorName || 'المسؤول عن هذا التطبيق'}. لا يذكر هذا الإشعار اسماً منفصلاً لشركة أو كيان قانوني مسجل. يمكن إرسال استفسارات الخصوصية والطلبات إلى وسيلة التواصل أدناه.`] },
-      { title: 'المعلومات التي تُجمع أو تُستخدم', paragraphs: ['عند تسجيل المشارك، يطلب التطبيق الاسم الكامل ورقم الهاتف والدولة. ويُنسق رقم الهاتف حسب الدولة المختارة. لا يظهر في مصدر التسجيل حقل لتاريخ الميلاد أو تحقق برمز لمرة واحدة عبر الهاتف.', 'يربط النظام الملف بمعرّف داخلي وهوية مصادقة مجهولة مرتبطة بالجهاز عبر Supabase. ويسجل للمشاركة المسابقة ورقم المشاركة وتسلسلها اللذين يعينهما الخادم ووقت الإنشاء، وقد يسجل وقت كشف الرقم.', 'قد يعالج التطبيق ومزودوه معلومات الجهاز والشبكة والتشخيص والأمان وتشغيل الخدمة. وتتطلب سجلات الخادم ومدد الاحتفاظ والحقول التي يعالجها المزود تحققاً من إعدادات الإنتاج.'] },
-      { title: 'أرقام الهاتف والمشاركة', paragraphs: ['يُستخدم رقم الهاتف ضمن تسجيل المشارك لمنع ربط الرقم بأكثر من هوية مشاركة. لا يتحقق التسجيل في الشيفرة الحالية من ملكية الرقم برمز SMS. رقم الهاتف وحده ليس بيانات اعتماد آمنة ولا يثبت أن مقدمه يملك هوية المشاركة.', 'تُنشأ المشاركات وأرقامها أو تُسترجع عبر طلبات معتمدة من الخادم. تعرض صفحة مشاركاتي سجلات الهوية المصادقة على الجهاز الحالي؛ ولا يوفر الموقع بحثاً عاماً برقم الهاتف. وقد يعرض التطبيق معلومات الفائز ضمن نتائج الحملة.'] },
-      { title: 'التخزين المحلي والمعرّفات', paragraphs: ['يخزن التطبيق الاسم ورقم الهاتف ورمز الدولة ومعرّف الملف الشخصي واللغة أو الدور المحدد ورمز تجديد الجلسة المجهولة في مساحة تخزين محمية بالجهاز. كما يحتفظ Supabase Auth بالجلسة. وقد تخزن ذاكرة التطبيق المؤقتة بيانات الحملات والفئات والمشاركات لتحسين الأداء. قد يؤثر مسح التطبيق أو تغيير الجهاز على الوصول إلى هوية مرتبطة بالجهاز.'] },
-      { title: 'معالجة Supabase', paragraphs: ['يستخدم التطبيق Supabase للمصادقة وبيانات الخدمة، ومنها الملفات الشخصية وروابط الأجهزة والمسابقات والمشاركات والسجلات المرتبطة. وتستخدم الصور خدمة التخزين الخاصة بالتطبيق. لم يتسن التحقق من منطقة المشروع المباشرة أو سياسات الوصول والسجلات والنسخ الاحتياطية وإعدادات قاعدة البيانات المنشورة؛ لذلك لا تحدد هذه السياسة مدة احتفاظ أو منطقة استضافة بعينها.'] },
-      { title: 'Firebase Cloud Messaging', paragraphs: ['يدمج التطبيق Firebase Cloud Messaging للإشعارات. عند السماح بالإشعارات، قد يرتبط رمز مراسلة الجهاز بسجل جهاز المشارك لإرسال التنبيهات. قد تعالج Firebase وGoogle معلومات التسليم والجهاز والتشخيص وفق شروطهما. يمكن إدارة إذن الإشعارات من إعدادات الجهاز.'] },
-      { title: 'Google AdMob ومعرّفات الإعلانات', paragraphs: ['يدمج التطبيق Google Mobile Ads لعرض إعلانات البانر وفتح التطبيق والإعلانات البينية والإعلانات الاختيارية بمكافأة. يطلب المصدر الحالي إعلانات غير مخصصة. لا يعني ذلك عدم معالجة بيانات الجهاز أو الإعلان؛ فقد يعالج SDK من Google عنوان IP ومعرّفات الجهاز والإعلانات وموقعاً تقريبياً مستنتجاً من IP وتفاعلات الإعلان ومعلومات التسليم والتكرار والتشخيص وفق شروط Google واختيارات الموافقة المنطبقة.', 'الإعلان بمكافأة اختياري. يمكن للمستخدم متابعة مسار المشاركة المجاني المعتاد من دونه؛ ومشاهدته لا تنشئ مشاركة إضافية ولا تزيد فرص الفوز في تدفق المشاركة الحالي.'] },
-      { title: 'الموافقة وخيارات الخصوصية', paragraphs: ['يدمج مصدر التطبيق منصة Google لإدارة الموافقة UMP، ويتحقق من السماح بطلب الإعلانات، ويتيح خيار الخصوصية عندما يتطلب SDK ذلك. لم تتوفر رسائل الموافقة وإعداداتها الإقليمية في حساب الإعلانات لهذا التدقيق. راجع اختياراتك أو غيّرها من خيارات خصوصية الإعلانات داخل التطبيق عند ظهورها ومن إعدادات الجهاز المتاحة.'] },
-      { title: 'كيفية استخدام المعلومات', bullets: ['إنشاء ملف المشارك والجلسة المرتبطة بالجهاز وإدارتهما.', 'التحقق من أهلية الحملة وإنشاء مشاركة أو استرجاعها.', 'عرض المسابقات التي انضممت إليها وأرقام المشاركة والنتائج والإشعارات المرتبطة.', 'حماية الخدمة وتشخيص الأعطال ومنع التكرار أو إساءة المشاركة.', 'تقديم الإعلانات وقياسها وضبط تكرارها وفق الاختيارات وإعدادات المزود.'] },
-      { title: 'المشاركة ومزودو الخدمة', paragraphs: ['تعالج بياناتك أنظمة التطبيق والمزودون اللازمون لتشغيله، ومنهم Supabase وFirebase/Google وGoogle Mobile Ads. وقد يعالج المزودون البيانات لتقديم الخدمة والأمان والتشخيص والإعلانات والامتثال القانوني وفق شروطهم. لا يرسل التطبيق أسماء المشاركين أو أرقام هواتفهم إلى Google لاستهداف الإعلانات بحسب الشيفرة التي تمت مراجعتها، لكن SDK الإعلانات يعالج بياناته بصورة مستقلة. وقد يصل المنظم إلى معلومات الإدارة والنتائج المتاحة لحسابه المصرح به.'] },
-      { title: 'الأمان', paragraphs: ['يستخدم التطبيق جلسات Supabase المصادق عليها للطلبات المرتبطة بالمشارك، ويخزن بعض قيم الهوية في مساحة التخزين الآمنة للنظام. وتتعامل وظائف الخادم مع إنشاء المشاركات وتعديل الملف الشخصي. لا يمكن ضمان الأمان المطلق، كما لم يتم التحقق مستقلاً من قواعد أمان الخادم المنشورة وسجلات الوصول وإجراءات الحوادث.'] },
-      { title: 'الاحتفاظ', paragraphs: ['لا يحدد المصدر مدة احتفاظ ثابتة أو جدول انتهاء للنسخ الاحتياطية. قد تبقى بيانات المشارك والحملة ما دامت لازمة لتشغيل الحملة أو حسم نتائجها أو منع إساءة الاستخدام أو تنفيذ الالتزامات القانونية أو معالجة النزاعات. يمكنك طلب الحذف، وقد يقتصر الحذف عند وجوب الاحتفاظ ببعض السجلات لهذه الأغراض. ينبغي للجهة المشغلة نشر مدد محددة بعد التحقق من النسخ الاحتياطية ومتطلبات القانون.'] },
-      { title: 'خياراتك وطلباتك', paragraphs: ['يمكنك تعديل الاسم ورقم الهاتف والدولة من التطبيق، وإيقاف الإشعارات من إعدادات الجهاز وإدارة خيارات خصوصية الإعلانات داخل التطبيق عند توفرها. يمكنك طلب الحذف باتباع صفحة حذف البيانات أو مراسلة الدعم. يُراجع الطلب قبل تنفيذه، ولا يكفي تقديم رقم الهاتف وحده لإثبات الهوية.'] },
-      { title: 'حذف البيانات', paragraphs: ['يتضمن مصدر التطبيق وظيفة خادم لحذف بيانات المشارك، لكن لم يمكن التحقق من نشر ترحيل قاعدة البيانات، ولم يظهر عنصر داخل التطبيق يستدعيها في المصدر الذي تمت مراجعته. لذلك استخدم حالياً طلب الدعم الموضح في صفحة حذف البيانات. لا ترسل معلومات حساسة إلا إذا طلب الدعم بيانات لازمة للتحقق.'] },
-      { title: 'الأطفال وشروط العمر', paragraphs: ['لا يتضمن نموذج التسجيل الذي تمت مراجعته تاريخ ميلاد أو بوابة عمر عامة. وقد تضع كل حملة شروط عمر أو دولة خاصة بها. لا تشارك ما لم يسمح القانون بذلك وتستوف شروط الحملة؛ وعلى ولي الأمر التواصل مع الدعم إذا أُرسلت بيانات طفل. يبيّن تصنيف Google Play الحالي أن المحتوى مناسب للجميع، لكنه لا يحل محل ضوابط العمر أو المراجعة القانونية.'] },
-      { title: 'المعالجة الدولية', paragraphs: ['قد تعالج Supabase وFirebase وGoogle المعلومات في بلدان خارج بلد إقامتك. لم تتأكد منطقة Supabase الإنتاجية أو تفاصيل النقل التعاقدية خلال تدقيق المصدر. توضح إشعارات المزودين ممارساتهم: <a href="https://supabase.com/privacy" rel="noreferrer">خصوصية Supabase</a> و<a href="https://firebase.google.com/support/privacy" rel="noreferrer">خصوصية وأمان Firebase</a> و<a href="https://policies.google.com/privacy" rel="noreferrer">سياسة خصوصية Google</a>.'] },
-      { title: 'التعديلات على السياسة', paragraphs: ['قد نحدث هذه السياسة عند تغير التطبيق أو ممارسات البيانات. يوضح تاريخ التحديث أدناه النسخة الحالية المنشورة على الموقع. وينبغي إظهار التعديلات المهمة هنا وفي التطبيق أو صفحة المتجر عند الحاجة.'] },
-      { title: 'التواصل', paragraphs: [`لاستفسارات الخصوصية أو الدعم أو الحذف، راسل <a href="mailto:${site.supportEmail}">${site.supportEmail}</a>، واكتب “Creative Rewards App” في عنوان الرسالة. لم يذكر هذا الإشعار اسماً قانونياً لكيان أو شركة منفصلة؛ وبيانات التواصل لا تثبت تسجيل كيان قانوني.`] },
+      {
+        "title": "",
+        "paragraphs": [
+          "تحترم Creative Rewards (\"نحن\") خصوصيتك وتحمي المعلومات التي تقدّمها عند استخدامك لتطبيقنا.",
+          "توضّح سياسة الخصوصية هذه المعلومات التي نجمعها، وكيف نستخدمها ونخزّنها، والخيارات المتاحة لك.",
+          "باستخدامك Creative Rewards، فإنك تقرّ بالممارسات الموضّحة في هذه السياسة."
+        ]
+      },
+      {
+        "title": "1. المعلومات التي نجمعها",
+        "paragraphs": [
+          "<strong class=\"legal-subheading\">معلومات الحساب</strong>",
+          "عند إنشاء حساب، نجمع بريدك الإلكتروني (يُؤكَّد برمز لمرة واحدة يُرسل إليه)، وكلمة المرور التي تختارها، والصورة الرمزية التي تحددها، ولغتك المفضّلة. ويمكنك أيضاً إضافة اسم للعرض. ترتبط كل جلسة تسجيل دخول باسم الجهاز حتى تتمكن من مراجعة جلساتك وإنهائها.",
+          "<strong class=\"legal-subheading\">معرّفات حسابات المنصّات</strong>",
+          "يمكنك اختيارياً تقديم معرّفات لمنصّات الألعاب أو التواصل الاجتماعي المدعومة، مثل معرّف لاعب PUBG أو Riot ID ‏(Name#TAG) أو اسم مستخدم في Instagram أو TikTok أو Facebook. يمكنك حفظها في الحسابات المحفوظة، وتُدخل أحدها عند طلب المكافأة المرتبطة بصورة. يعرض التطبيق المعرّفات المحفوظة بشكل مخفي جزئياً، ونسجّل موافقتك عند حفظ أي معرّف.",
+          "لا نطلب أبداً كلمات مرور حساباتك في الألعاب أو مواقع التواصل، ولا رموز الدخول أو ملفات تعريف الارتباط.",
+          "<strong class=\"legal-subheading\">النقاط ونشاط التطبيق</strong>",
+          "نحتفظ برصيد نقاطك ومعاملات النقاط (مثل النقاط المكتسبة من الإعلانات بمكافأة والنقاط المصروفة على التنزيلات)، والصور التي تفتحها وتنزّلها، وطلبات المكافآت الخاصة بك مع حالتها.",
+          "<strong class=\"legal-subheading\">المشاركة في السحوبات</strong>",
+          "عند انضمامك إلى سحب، نخزّن مشاركتك ورقم المشاركة الذي يخصّصه خادمنا والسحب ونتيجته.",
+          "إذا فزت، نطلب منك بيانات تواصل، مثل رقم الهاتف والمدينة، لنتمكّن من تسليم جائزتك.",
+          "<strong class=\"legal-subheading\">معلومات الجهاز والمعلومات التقنية</strong>",
+          "لإرسال الإشعارات، يسجّل التطبيق جهازك برمز الإشعارات ونوع النظام وإصدار التطبيق ولغتك. وقد تحتفظ خوادمنا بسجلات تقنية للطلبات، مثل عنوان IP والوقت، لتشغيل الخدمة وحمايتها. لا يتضمّن التطبيق خدمة تحليلات أو خدمة منفصلة لتقارير الأعطال.",
+          "<strong class=\"legal-subheading\">معلومات الإعلانات</strong>",
+          "يعرض التطبيق إعلانات Google AdMob: إعلانات اختيارية بمكافأة تمنح نقاطاً في المحفظة، وإعلانات بينية قد تظهر عند فتح تفاصيل سحب، وإعلانات عند فتح التطبيق. يطلب التطبيق إعلانات غير مخصّصة، ومع ذلك قد تعالج Google معرّفات الجهاز والإعلانات وعنوان IP والموقع التقريبي المستنتج منه والتفاعل مع الإعلانات، وفقاً لسياساتها وخيارات الموافقة المطبّقة عليك."
+        ]
+      },
+      {
+        "title": "2. كيف نستخدم المعلومات",
+        "paragraphs": [
+          "نستخدم المعلومات من أجل:"
+        ],
+        "bullets": [
+          "إنشاء الحسابات والتحقق منها وإدارتها.",
+          "عرض أرصدة النقاط وسجل المعاملات والحفاظ عليها.",
+          "توفير الصور والتنزيلات.",
+          "حفظ معرّفات المنصّات ومعالجة طلبات المكافآت التي تقدّمها.",
+          "إدارة المشاركة في السحوبات ونشر النتائج.",
+          "التواصل مع الفائزين وترتيب تسليم الجوائز.",
+          "إرسال إشعارات تخص حسابك والسحوبات.",
+          "فحص المشكلات التقنية وتحسين الأداء.",
+          "منع المعاملات المكرّرة والاحتيال وإساءة الاستخدام.",
+          "الوفاء بالالتزامات القانونية."
+        ]
+      },
+      {
+        "title": "3. الصور والتنزيلات",
+        "paragraphs": [
+          "يوفّر Creative Rewards صوراً رقمية لتصفّحها وتنزيلها.",
+          "بعض الصور مجانية. أما الصور المدفوعة فتكلّف نقاطاً عند كل تنزيل، بما في ذلك تكرار تنزيل الصورة نفسها، ويُعرض السعر قبل أن تؤكّد.",
+          "نسجّل الصورة والنقاط المصروفة وسجل تنزيلاتك لتشغيل الخدمة وتقديم الدعم والحفاظ على دقة سجلات المعاملات.",
+          "تُحفظ الصور التي تنزّلها في معرض الصور على جهازك، وتبقى هناك حتى تحذفها."
+        ]
+      },
+      {
+        "title": "4. معلومات حسابات المنصّات",
+        "paragraphs": [
+          "تقديم معرّف لمنصّة ما لا يعني تسجيل الدخول إلى تلك المنصّة.",
+          "نستخدم المعرّفات لإدارة حساباتك المحفوظة ولتسليم المكافآت التي تطلبها، مثل العملات داخل الألعاب المرتبطة بصورة. يمكن للمسؤولين المخوّلين رؤية معرّف الطلب عند معالجته، وعند الحاجة لأغراض الأمان أو الدعم.",
+          "يمكنك تعديل المعرّفات المحفوظة أو حذفها من الملف الشخصي &gt; الحسابات المحفوظة. ويبقى المعرّف الذي أرسلته مع طلب مكافأة مرتبطاً بذلك الطلب."
+        ]
+      },
+      {
+        "title": "5. السحوبات والفائزون",
+        "paragraphs": [
+          "يمكن للمستخدمين المؤهّلين الانضمام إلى السحوبات في Creative Rewards.",
+          "نخزّن بيانات المشاركة في السحوبات وحالة الفوز وبيانات التواصل التي يرسلها الفائزون.",
+          "تُستخدم بيانات تواصل الفائز للتحقق من المطالبة والتواصل معه وتسليم الجائزة. يمكنك إرسالها من إعلان الفوز أو لاحقاً من السحب في قسم سحوباتي، حتى الموعد النهائي للمطالبة.",
+          "إذا لم ترسل البيانات المطلوبة، فقد لا نتمكّن من تسليم الجائزة."
+        ]
+      },
+      {
+        "title": "6. النقاط والإعلانات",
+        "paragraphs": [
+          "يستخدم Creative Rewards نظام نقاط داخل التطبيق. تُكتسب النقاط من خلال الأنشطة المدعومة، ومنها الإعلانات الاختيارية بمكافأة، وتُصرف على الميزات المؤهّلة مثل تنزيل الصور.",
+          "لا تُضاف نقاط الإعلان بمكافأة إلا بعد أن يتحقق خادمنا من اكتمال مشاهدة الإعلان. ونحتفظ بسجلات المعاملات لتتبّع النقاط المضافة والمصروفة ومنع النشاط المكرّر أو غير المصرّح به.",
+          "الانضمام إلى سحب لا يتطلب أبداً مشاهدة إعلان.",
+          "تُقدَّم الإعلانات عبر Google AdMob، وتخضع معالجتها للمعلومات لسياسة خصوصية Google ومتطلبات الموافقة المعمول بها."
+        ]
+      },
+      {
+        "title": "7. الإشعارات",
+        "paragraphs": [
+          "بإذنك، نرسل إشعارات عن تحديثات السحوبات وإعلانات الفائزين وطلباتك وأحداث الحساب الأخرى.",
+          "يمكنك إدارة إذن الإشعارات من إعدادات جهازك."
+        ]
+      },
+      {
+        "title": "8. مشاركة المعلومات",
+        "paragraphs": [
+          "لا نبيع المعلومات الشخصية.",
+          "نشارك المعلومات فقط مع:"
+        ],
+        "bullets": [
+          "مزوّدي الخدمات الذين يستضيفون خوادمنا ويشغّلونها، وخدمة Google Firebase Cloud Messaging التي تسلّم الإشعارات.",
+          "Google AdMob التي تعالج معلومات الإعلانات كما هو موضّح أعلاه.",
+          "المسؤولين المخوّلين الذين يحتاجونها لتشغيل الخدمة ومعالجة طلباتك.",
+          "الجهات الرسمية أو أطراف أخرى عندما يفرض القانون الإفصاح."
+        ],
+        "after": [
+          "تقتصر أي مشاركة على هذه الأغراض التشغيلية والالتزامات القانونية."
+        ]
+      },
+      {
+        "title": "9. أمان البيانات",
+        "paragraphs": [
+          "نستخدم إجراءات تقنية وتنظيمية لحماية المعلومات من الوصول أو التعديل أو الإفصاح غير المصرّح به أو الفقدان. ويقتصر الوصول الإداري حسب الدور.",
+          "على جهازك، تُحفظ رموز تسجيل الدخول في تخزين آمن وتُستثنى من النسخ الاحتياطي للجهاز.",
+          "لا توجد وسيلة تخزين أو نقل عبر الإنترنت آمنة تماماً."
+        ]
+      },
+      {
+        "title": "10. الاحتفاظ بالبيانات",
+        "paragraphs": [
+          "نحتفظ بالمعلومات الشخصية طالما كان ذلك ضرورياً لتشغيل التطبيق والحفاظ على حسابك ودعم المعاملات وإدارة السحوبات وحل النزاعات ومنع إساءة الاستخدام والوفاء بالالتزامات القانونية.",
+          "عند حذف حسابك، يُزال بعد فترة سماح مدتها 14 يوماً مع نقاطه وطلباته ومشاركاته في السحوبات. وقد نحتفظ بسجلات محدودة لمدة أطول حيث يفرض القانون ذلك أو يسمح به، مثل منع الاحتيال أو معالجة النزاعات."
+        ]
+      },
+      {
+        "title": "11. خياراتك المتعلقة بالخصوصية",
+        "paragraphs": [
+          "بحسب الميزات المتاحة والقانون المعمول به، يمكنك:"
+        ],
+        "bullets": [
+          "مراجعة معلومات ملفك الشخصي وتحديثها.",
+          "تعديل معرّفات المنصّات المحفوظة أو حذفها.",
+          "إدارة إذن الإشعارات.",
+          "مراجعة خيارات خصوصية الإعلانات في التطبيق عندما يعرضها نموذج الموافقة.",
+          "طلب الاطلاع على معلوماتك الشخصية أو تصحيحها.",
+          "حذف حسابك من التطبيق: الملف الشخصي > إعدادات الحساب > حذف الحساب. تؤكّد بكلمة المرور، ويُحذف الحساب بعد 14 يوماً، ويؤدي تسجيل الدخول مجدداً خلال هذه المدة إلى إلغاء الطلب."
+        ],
+        "after": [
+          "يمكنك أيضاً طلب الحذف عبر البريد الإلكتروني المذكور أدناه. وقد نحتاج إلى التحقق من أن الطلب صادر عن صاحب الحساب."
+        ]
+      },
+      {
+        "title": "12. خصوصية الأطفال",
+        "paragraphs": [
+          "Creative Rewards غير موجّه للأطفال دون الحد الأدنى للسن الذي يسمح به القانون المعمول به، ما لم تتوفر موافقة الوالدين أو الوصي المطلوبة.",
+          "إذا كانت لسحب ما متطلبات عمرية إضافية، فإنها تُذكر في قواعده.",
+          "إذا علمنا أن معلومات شخصية جُمعت بما يخالف متطلبات خصوصية الأطفال، فسنتخذ الإجراءات المناسبة لمعالجة ذلك."
+        ]
+      },
+      {
+        "title": "13. خدمات الأطراف الثالثة",
+        "paragraphs": [
+          "نعتمد على Google Firebase (للإشعارات) وGoogle AdMob (للإعلانات)، وتعالجان المعلومات وفق سياسات الخصوصية الخاصة بهما.",
+          "لسنا مسؤولين عن ممارسات الخصوصية المستقلة لتطبيقات أو خدمات خارجية غير مرتبطة بنا، بما فيها منصّات الألعاب والتواصل التي تقدّم معرّفاتها."
+        ]
+      },
+      {
+        "title": "14. التغييرات على سياسة الخصوصية",
+        "paragraphs": [
+          "قد نحدّث سياسة الخصوصية هذه عند تغيّر التطبيق أو ممارساتنا أو المتطلبات القانونية. ستحمل النسخة المحدّثة تاريخاً جديداً، وسنقدّم إشعاراً إضافياً عند الحاجة."
+        ]
+      },
+      {
+        "title": "15. تواصل معنا",
+        "paragraphs": [
+          "لأي أسئلة تتعلق بالخصوصية أو معلوماتك الشخصية أو طلبات الحذف، تواصل معنا:"
+        ],
+        "bullets": [
+          "التطبيق: Creative Rewards",
+          "البريد الإلكتروني: mohamed.elsamman.dev@gmail.com"
+        ]
+      }
     ],
     terms: [
-      { title: 'الموافقة والخدمة', paragraphs: ['تسري هذه الشروط على تطبيق Creative Rewards App للأندرويد (معرّف الحزمة com.creativehub.rewardsapp). باستخدام التطبيق فإنك توافق على هذه الشروط وقواعد كل حملة. إذا لم توافق، فلا تستخدم التطبيق.'] },
-      { title: 'الأهلية', paragraphs: ['يجب أن يسمح القانون لك باستخدام التطبيق وأن تستوفي شروط العمر والدولة وغيرها التي يحددها منظم الحملة. لا تشارك إذا منع القانون المحلي أو شروط الحملة ذلك. لا يجمع نموذج التسجيل تاريخ الميلاد ولا يتحقق من العمر بنفسه.'] },
-      { title: 'قواعد الحملات والمنظمون', paragraphs: ['ينشئ مسؤولو أو منظمو الحملات المسابقات ويديرونها. تحدد صفحة الحملة وقواعدها الجائزة وفترة المشاركة والأهلية وحدود العدد وآلية الاختيار والشروط الأخرى. يوفر التطبيق أدوات عرض الحملات والمشاركة، ولا يتحقق مستقلاً من جائزة كل منظم أو ادعاءاته أو قدرته على التسليم.', 'يتحمل المنظم مسؤولية دقة معلومات الحملة وتطبيق القواعد المنشورة واختيار الفائز وإعلان النتيجة كما هو موضح والتواصل مع الفائز وترتيب تسليم الجائزة. تواصل مع المنظم عبر معلومات الحملة للأسئلة الخاصة بها.'] },
-      { title: 'المشاركة والأرقام', paragraphs: ['قد يسجل المشارك اسمه ورقم هاتفه ودولته. يحد التطبيق الحالي المشاركة بهوية واحدة لكل مسابقة ويعيد المشاركة القائمة إذا حاولت الهوية نفسها مرة أخرى. يعين الخادم رقم المشاركة؛ ولا يجوز التلاعب بالرقم أو إنشاء هويات مكررة أو تجاوز شروط الحملة.', 'لا تصبح المشاركة سارية إلا بعد تأكيد الخدمة. لا تقبل الحملات المجدولة أو المنتهية مشاركات خارج فترتها المؤهلة. الإعلان الاختياري بمكافأة ليس شرطاً للمشاركة المجانية، ولا يضيف مشاركة أو يزيد فرص الفوز.'] },
-      { title: 'اختيار الفائز والنتائج', paragraphs: ['يتحكم المنظم في اختيار الفائز وفق الطريقة المبينة في قواعد الحملة. يدعم التطبيق الاختيار والإعلان اللذين يديرهما المنظم، لكن هذه الشروط لا تضمن أن كل اختيار عشوائي أو خاضع لتدقيق مستقل. رقم المشاركة معرّف للمشاركة وليس ضماناً للفوز. قد تعلن النتائج ومعلومات الفائز داخل التطبيق أو بالإشعار.'] },
-      { title: 'الجوائز', paragraphs: ['تخضع إتاحة الجائزة ووصفها وتسليمها وضرائبها وضمانها ومتطلبات استلامها لشروط الحملة ومسؤوليات المنظم. التطبيق ليس مورّد الجائزة إلا إذا نصت الحملة على أنه المنظم. لا تضمن المنصة جائزة أو نتيجة تسليم بعينها.'] },
-      { title: 'الاحتيال وإساءة الاستخدام', bullets: ['لا تستخدم معلومات مزيفة أو مسروقة أو تخص شخصاً آخر.', 'لا تؤتمت المشاركات ولا تستغل العيوب ولا تعطل الخدمة ولا تتجاوز حدود الحملات.', 'لا تتدخل في مشارك آخر أو منظم أو فائز.', 'يجوز لنا أو للمنظم التحقيق في إساءة الاستخدام وتقييد الوصول أو المشاركات وفق القانون والقواعد المنطبقة.'] },
-      { title: 'الإعلانات', paragraphs: ['قد يعرض التطبيق إعلانات بانر وفتح التطبيق وبينية واختيارية بمكافأة عبر Google Mobile Ads. تتطلب الإعلانات بمكافأة اختياراً صريحاً ويمكن المتابعة دون مشاهدتها. لا تمنح المشاهدة مشاركة إضافية أو فرصة فوز أعلى وفق تدفق التطبيق الحالي. تخضع الإعلانات لشروط المزود وخيارات الخصوصية المنطبقة.'] },
-      { title: 'التوفر والتغييرات', paragraphs: ['قد نصون أجزاء التطبيق أو نحدثها أو نوقفها مؤقتاً أو ننهيها. قد تؤثر أعطال الشبكة أو الجهاز أو الخادم أو المزود في توفر الخدمة. تحدد مواعيد الحملة وحالتها المسجلة على الخادم قبول المشاركة؛ ولا يتجاوز توقيت الجهاز ذلك.'] },
-      { title: 'الملكية الفكرية', paragraphs: ['تعود ملكية برنامج التطبيق وعلامته ومحتوى الموقع إلى أصحابها أو المرخصين لهم. وقد تعود صور الحملات وأسماؤها وعلامات الجوائز إلى المنظم أو أطراف أخرى. يجوز لك استخدام الخدمة لغرضها الشخصي المقصود وفق هذه الشروط والقانون.'] },
-      { title: 'المسؤولية', paragraphs: ['في الحدود التي يسمح بها القانون، يقدم التطبيق دون وعد بتوفر متواصل أو فوز المستخدم. ولا تلغي هذه الشروط حقوقاً أو وسائل انتصاف لا يجوز استبعادها قانوناً. يظل المنظم مسؤولاً عن بيانات حملته وتسليم الجائزة.'] },
-      { title: 'التعليق والإنهاء', paragraphs: ['يجوز تقييد الوصول لأسباب الأمان أو القانون أو سلامة الخدمة أو مخالفة جوهرية للشروط. ولا يجوز استبعاد المشاركين بقرار المنظم إلا وفق قواعد الحملة والقانون. لا يعني إيقاف الوصول حذف السجلات التي يجب الاحتفاظ بها للحملة أو القانون أو الأمان أو النزاعات؛ راجع سياسة الخصوصية وإجراءات الحذف.'] },
-      { title: 'التحديثات والتواصل', paragraphs: [`قد نعدل الشروط عند تغير الخدمة. يسري الإصدار المحدث على الاستخدام اللاحق بعد نشره حيث يسمح القانون. أرسل الأسئلة إلى <a href="mailto:${site.supportEmail}">${site.supportEmail}</a>.`] },
+      {
+        "title": "",
+        "paragraphs": [
+          "مرحباً بك في Creative Rewards.",
+          "تحكم هذه الشروط والأحكام استخدامك لتطبيق Creative Rewards، بما في ذلك تصفّح الصور والنقاط والتنزيلات ومكافآت الصور والسحوبات وميزات الحساب والخدمات المرتبطة بها.",
+          "بدخولك إلى التطبيق أو استخدامه، فإنك توافق على هذه الشروط والأحكام."
+        ]
+      },
+      {
+        "title": "1. استخدام التطبيق",
+        "paragraphs": [
+          "يوفّر Creative Rewards صوراً رقمية ونظام نقاط داخل التطبيق ومكافآت مرتبطة ببعض الصور والمشاركة في السحوبات وميزات الحساب المرتبطة بها.",
+          "يجب أن تقدّم معلومات صحيحة عندما تتطلبها ميزة ما، وأن تستخدم التطبيق بشكل قانوني.",
+          "قد نحدّث الميزات أو نغيّرها أو نعلّقها أو نوقفها عند الضرورة المعقولة."
+        ]
+      },
+      {
+        "title": "2. حسابات المستخدمين",
+        "paragraphs": [
+          "أنت مسؤول عن النشاط في حسابك وعن الحفاظ على أمان بيانات تسجيل الدخول.",
+          "توافق على عدم انتحال شخصية الآخرين أو إنشاء حسابات لأغراض احتيالية أو محاولة تجاوز إجراءات أمان التطبيق.",
+          "قد نقيّد الحسابات المتورطة في إساءة الاستخدام أو الاحتيال أو الأتمتة غير المصرّح بها أو مخالفة هذه الشروط."
+        ]
+      },
+      {
+        "title": "3. نظام النقاط",
+        "paragraphs": [
+          "يستخدم Creative Rewards نقاطاً افتراضية للأنشطة المدعومة داخل التطبيق. ويمكن كسب النقاط من خلال الأنشطة المؤهّلة، ومنها الإعلانات الاختيارية بمكافأة. وقد يتغيّر عدد النقاط لأي نشاط حسب إعدادات التطبيق.",
+          "النقاط:"
+        ],
+        "bullets": [
+          "وحدات افتراضية تُستخدم داخل Creative Rewards فقط.",
+          "لا تمثّل مالاً ولا قيمة نقدية مخزّنة.",
+          "لا يمكن سحبها نقداً.",
+          "لا يمكن تحويلها بين المستخدمين إلا إذا سمحت ميزة بذلك صراحة.",
+          "تُخصم عند تأكيد نشاط مؤهّل، مثل التنزيل المدفوع.",
+          "تخضع لإجراءات منع الاحتيال والتحقق من المعاملات."
+        ],
+        "after": [
+          "لا تُضاف النقاط إلا بعد أن يتحقق خادمنا من النشاط. ويُحظر التلاعب بأرصدة النقاط أو أحداث الإعلانات أو سجلات المعاملات."
+        ]
+      },
+      {
+        "title": "4. الصور الرقمية",
+        "paragraphs": [
+          "يتيح لك Creative Rewards تصفّح الصور الرقمية وتنزيلها. بعض الصور مجانية، وبعضها يكلّف عدداً محدداً من النقاط.",
+          "يُعرض السعر قبل أن تؤكّد التنزيل المدفوع. ويتطلب كل تنزيل مدفوع خصماً جديداً للنقاط، بما في ذلك تكرار تنزيل الصورة نفسها. يرجى مراجعة السعر قبل التأكيد.",
+          "إذا فشل حفظ تنزيل مدفوع، يمكنك إعادة المحاولة لفترة قصيرة دون خصم جديد. وبعد ذلك، يكلّف التنزيل مجدداً نقاطاً من جديد.",
+          "لا يؤدي تنزيل الصورة إلى نقل ملكية حقوق الملكية الفكرية الخاصة بها. وما لم يُصرّح بذلك صراحة، لا يجوز لك إعادة توزيع الصور التي تحصل عليها عبر Creative Rewards أو بيعها أو ترخيصها للغير أو استغلالها تجارياً."
+        ]
+      },
+      {
+        "title": "5. مكافآت الصور",
+        "paragraphs": [
+          "تتضمّن بعض الصور مكافأة مرتبطة بها، مثل عملات داخل لعبة مدعومة.",
+          "بعد تنزيل هذه الصورة، يمكنك طلب المكافأة بإدخال معرّف الحساب الذي سيستلمها. يظهر الطلب في طلباتي مع حالته: قيد الانتظار أو قيد التنفيذ أو مكتمل أو مرفوض.",
+          "يراجع فريقنا الطلبات وينفّذها. وأنت مسؤول عن إدخال المعرّف الصحيح. ولا يؤدي رفض الطلب إلى استرداد النقاط المصروفة على التنزيل."
+        ]
+      },
+      {
+        "title": "6. حسابات المنصّات المحفوظة",
+        "paragraphs": [
+          "يمكنك حفظ معرّفات للمنصّات المدعومة، مثل معرّفات حسابات الألعاب أو أسماء المستخدمين في مواقع التواصل.",
+          "أنت مسؤول عن تقديم معرّفات صحيحة وعن امتلاك الإذن باستخدامها.",
+          "لا ترسل كلمات مرور أو رموز دخول خاصة أو معلومات شخص آخر دون إذن.",
+          "قد ترتبط المعرّفات المحفوظة بطلبات المكافآت الخاصة بك، كما هو موضّح في سياسة الخصوصية."
+        ]
+      },
+      {
+        "title": "7. السحوبات",
+        "paragraphs": [
+          "قد يقدّم Creative Rewards سحوبات ترويجية للمستخدمين المؤهّلين. وقد تختلف شروط الأهلية وفترة المشاركة وتفاصيل الجوائز والشروط من سحب لآخر.",
+          "المشاركة لا تضمن الفوز. ويجب عليك اتباع القواعد المعروضة لكل سحب، بما في ذلك أي خطوات يطلب إكمالها قبل الانضمام.",
+          "لا يتطلب الانضمام إلى سحب شراء صورة أو صرف نقاط أو مشاهدة إعلان.",
+          "لا تُقبل إلا المشاركات التي يؤكّدها خادمنا مع رقم المشاركة الذي يخصّصه."
+        ]
+      },
+      {
+        "title": "8. اختيار الفائزين والنتائج",
+        "paragraphs": [
+          "يُختار الفائزون أو يُؤكَّدون وفقاً لقواعد كل سحب، اعتماداً على السجلات التي يحتفظ بها التطبيق.",
+          "قد يبقى السحب المنتهي ظاهراً للاطلاع. ويمكنك رؤية مشاركاتك ونتائجك داخل التطبيق.",
+          "قد نحقق في حالات الاشتباه بإساءة الاستخدام أو المشاركات المكرّرة أو مخالفة القواعد."
+        ]
+      },
+      {
+        "title": "9. بيانات تواصل الفائز والمطالبة بالجائزة",
+        "paragraphs": [
+          "إذا فزت، قد يعرض التطبيق إعلاناً واحتفالاً بالفوز.",
+          "لست مضطراً لإرسال بيانات التواصل فوراً. يمكنك العودة إلى السحب في سحوباتي واستخدام زر استلام جائزتي حتى الموعد النهائي للمطالبة.",
+          "يجب أن تقدّم معلومات صحيحة عند المطالبة بالجائزة. وقد يؤثر عدم إرسالها قبل الموعد النهائي على إمكانية حصولك على الجائزة، وفقاً لقواعد السحب.",
+          "يخضع تسليم الجائزة والتحقق منها والشروط المرتبطة بها لشروط كل سحب."
+        ]
+      },
+      {
+        "title": "10. الإشعارات",
+        "paragraphs": [
+          "قد يرسل التطبيق إشعارات عن السحوبات وإعلانات الفائزين والطلبات والنقاط وأحداث الحساب وتحديثات الخدمة.",
+          "يعتمد وصول الإشعارات على إذن الجهاز والاتصال بالشبكة وتوفّر الخدمة. ولا يغيّر الإشعار الفائت أو المتأخر نتيجة السحب المسجّلة رسمياً."
+        ]
+      },
+      {
+        "title": "11. الإعلانات",
+        "paragraphs": [
+          "يعرض التطبيق إعلانات: فيديوهات اختيارية بمكافأة في المحفظة، وإعلانات بينية قد تظهر عند فتح تفاصيل سحب، وإعلانات عند فتح التطبيق.",
+          "لا يمنح الإعلان بمكافأة نقاطاً إلا عندما يؤكّد خادمنا اكتماله وأهليتك. وقد يؤدي إغلاقه أو تخطّيه إلى عدم إضافة أي نقاط.",
+          "قد يختلف توفّر الإعلانات حسب الجهاز والدولة وظروف الخدمة."
+        ]
+      },
+      {
+        "title": "12. الأنشطة المحظورة",
+        "paragraphs": [
+          "توافق على عدم القيام بما يلي:"
+        ],
+        "bullets": [
+          "التلاعب بطلبات التطبيق أو معاملات النقاط.",
+          "استغلال الأخطاء البرمجية للحصول على مزايا غير مصرّح بها.",
+          "استخدام حسابات آلية أو برامج روبوت لإساءة استخدام أنظمة المشاركة.",
+          "تقديم معلومات حساب احتيالية.",
+          "التحايل على حدود المشاركة أو قواعد الأهلية.",
+          "التدخّل في أمان التطبيق أو بنيته التحتية.",
+          "إعادة توزيع المحتوى المحمي دون إذن."
+        ],
+        "after": [
+          "قد نحقق في المخالفات المشتبه بها ونتخذ إجراءً متناسباً حيث يسمح القانون."
+        ]
+      },
+      {
+        "title": "13. التوفّر والمشكلات التقنية",
+        "paragraphs": [
+          "نسعى للحفاظ على موثوقية الخدمة، لكن لا يمكننا ضمان توفّرها دون انقطاع. فقد تؤثر انقطاعات الشبكة أو الصيانة أو أعطال الأطراف الثالثة أو قيود الأجهزة أو العيوب البرمجية على التطبيق مؤقتاً.",
+          "إذا أثّرت مشكلة تقنية على نشاط مسجّل، يمكنك التواصل مع الدعم لمراجعته."
+        ]
+      },
+      {
+        "title": "14. الملكية الفكرية",
+        "paragraphs": [
+          "يتمتع تطبيق Creative Rewards وعلامته التجارية وواجهته وبرمجياته ومحتواه الأصلي بحماية قوانين الملكية الفكرية.",
+          "تعود أسماء الأطراف الثالثة وعلاماتها التجارية ومحتواها إلى أصحابها. ولا يمنحك الوصول إلى المحتوى عبر التطبيق أي حقوق تتجاوز ما هو ممنوح صراحة."
+        ]
+      },
+      {
+        "title": "15. تقييد الحساب وإنهاؤه",
+        "paragraphs": [
+          "قد نقيّد الوصول أو نعلّقه عند الحاجة لمعالجة الاحتيال أو الحوادث الأمنية أو المتطلبات القانونية أو المخالفات الجوهرية لهذه الشروط.",
+          "يمكنك حذف حسابك من التطبيق (الملف الشخصي &gt; إعدادات الحساب &gt; حذف الحساب) أو بالتواصل مع الدعم. يُحذف الحساب بعد فترة سماح مدتها 14 يوماً، ويؤدي تسجيل الدخول خلالها إلى إلغاء الطلب. وقد تستمر التزامات الاحتفاظ القانونية بعد إغلاق الحساب."
+        ]
+      },
+      {
+        "title": "16. إخلاء المسؤولية",
+        "paragraphs": [
+          "يُقدَّم Creative Rewards وفقاً للقوانين المعمول بها وحقوق حماية المستهلك. ورغم سعينا للدقة والموثوقية، قد تكون بعض الميزات غير متاحة أحياناً أو تتأثر بمشكلات تقنية.",
+          "لا يوجد في هذه الشروط ما يستبعد حقوقاً أو مسؤوليات لا يجوز استبعادها قانوناً."
+        ]
+      },
+      {
+        "title": "17. التغييرات على هذه الشروط",
+        "paragraphs": [
+          "قد نحدّث هذه الشروط عند تغيّر الميزات أو متطلبات التشغيل أو الالتزامات القانونية. ستحمل النسخة المحدّثة تاريخاً جديداً، وسنبلغ المستخدمين بالتغييرات الجوهرية عند الحاجة."
+        ]
+      },
+      {
+        "title": "18. التواصل",
+        "paragraphs": [
+          "للأسئلة أو المساعدة أو طلبات الحساب:"
+        ],
+        "bullets": [
+          "التطبيق: Creative Rewards",
+          "البريد الإلكتروني: mohamed.elsamman.dev@gmail.com"
+        ]
+      }
     ],
     deletion: {
-      intro: 'يمكنك طلب حذف ملف المشارك ومعلوماته الشخصية المرتبطة بـ Creative Rewards App دون تثبيت التطبيق أو فتحه. ترتبط هوية المشارك بجلسة Supabase خاصة بالجهاز، وليست حساباً تقليدياً ببريد وكلمة مرور.',
-      stepsTitle: 'اطلب الحذف عبر البريد الإلكتروني',
-      steps: [`أرسل رسالة إلى <a href="mailto:${site.supportEmail}?subject=Creative%20Rewards%20App%20data%20deletion">${site.supportEmail}</a> بعنوان “Creative Rewards App data deletion”.`, 'أخبر الدعم أنك تطلب حذف ملف المشارك وبياناته الشخصية المرتبطة به. لا تضع رقم هاتف كامل أو وثيقة هوية في رسالتك الأولى.', 'قد يطلب الدعم معلومات إضافية محدودة للتحقق من الطلب. رقم الهاتف وحده لا يثبت الهوية. لا ترسل كلمات مرور أو رموز جلسات.', 'يراجع الدعم الطلب ويوضح السجلات التي يجب الاحتفاظ بها ثم يؤكد النتيجة بالبريد الإلكتروني.'],
-      verifyTitle: 'التحقق والمعالجة اليدوية',
-      verify: 'لا يوجد نموذج عام لحذف البيانات برقم الهاتف ولا واجهة آلية على الموقع. يتضمن مصدر التطبيق وظيفة حذف على الخادم، لكن ملف ترحيل قاعدة البيانات يشير إلى أنه لم يطبق ولم يظهر عنصر داخل التطبيق لبدء الحذف في المصدر المدقق. لذلك تتطلب الطلبات مراجعة الدعم والتحقق الآمن من الملكية قبل تغيير أي سجل. لا تعتبر الطلب مكتملاً حتى يؤكده الدعم.',
-      deleteTitle: 'البيانات التي قد تُحذف',
-      deleteText: 'قد يؤدي حذف مشارك بعد التحقق إلى إزالة ملفه وسجل جهازه والمشاركات والإشعارات المرتبطة به وهوية المصادقة المجهولة، إذا كانت آلية الخادم منشورة ومعتمدة. قد يؤثر حذف المشاركة في سجلات الفائزين المنشورة أو إجمالي الحملة. يجوز الاحتفاظ بالسجلات اللازمة للقانون أو الأمان أو النزاعات أو المحاسبة وفق القانون. يعتمد حذف النسخ الاحتياطية وبيانات المزود على إعدادات إنتاج لم يتم التحقق منها؛ ولا نعد بمدة ثابتة للإنجاز أو انتهاء النسخ.',
-      contact: 'لأسئلة الخصوصية أو طلبات الحذف، تواصل مع الدعم عبر',
-      noAutomation: 'حسابات الإدارة منفصلة وتستخدم البريد وكلمة المرور. هذه القناة مخصصة لبيانات المشاركين؛ ويتطلب حذف حساب مدير إجراءً مستقلاً تم التحقق منه.',
+      "intro": "يمكنك حذف حسابك في Creative Rewards وبياناته الشخصية من داخل التطبيق، أو طلب ذلك من الدعم عبر البريد الإلكتروني.",
+      "stepsTitle": "احذف حسابك من التطبيق",
+      "steps": [
+        "افتح Creative Rewards وسجّل الدخول.",
+        "انتقل إلى الملف الشخصي &gt; إعدادات الحساب &gt; حذف الحساب.",
+        "أكّد بكلمة المرور.",
+        "يُحذف حسابك بعد فترة سماح مدتها 14 يوماً، ويؤدي تسجيل الدخول مجدداً خلال هذه المدة إلى إلغاء الطلب."
+      ],
+      "verifyTitle": "التحقق",
+      "verify": "لا يمكن حذف الحساب إلا من قِبل صاحبه: في التطبيق تؤكّد بكلمة المرور، وعبر البريد الإلكتروني قد نطلب منك إثبات ملكيتك للحساب. لا نطلب منك كلمة المرور عبر البريد الإلكتروني أبداً.",
+      "deleteTitle": "البيانات التي تُحذف",
+      "deleteText": "بعد انتهاء فترة السماح، يُحذف الحساب مع نقاطه وطلباته ومشاركاته في السحوبات. وقد نحتفظ بسجلات محدودة لمدة أطول حيث يفرض القانون ذلك أو يسمح به، مثل منع الاحتيال أو معالجة النزاعات.",
+      "contact": "إذا تعذّر عليك استخدام التطبيق، اطلب الحذف عبر البريد الإلكتروني",
+      "noAutomation": "يعالج فريق الدعم طلبات البريد الإلكتروني يدوياً. لا يحذف هذا الموقع أي بيانات بنفسه."
     },
     contact: { intro: 'تواصل مع دعم Creative Rewards App للمساعدة في التطبيق أو استفسارات الخصوصية أو طلبات حذف البيانات.', support: 'الدعم العام', privacy: 'استفسارات الخصوصية', deletion: 'حذف البيانات', response: 'اذكر اسم التطبيق ووصفاً مختصراً للمشكلة. لا ترسل كلمات مرور أو رموز جلسات أو معلومات حساسة غير ضرورية. قد يطلب الدعم تفاصيل إضافية للتحقق من طلب الحذف.' },
     about: { intro: 'يجمع Creative Rewards App بين تصفح المسابقات وأدوات منظميها في تطبيق واحد.', title: 'للمشاركين والمنظمين', body: 'يمكن للمشاركين تصفح الحملات وقراءة شروط المنظم والانضمام للمسابقات المؤهلة ومشاهدة أرقام المشاركة والنتائج المنشورة. ويمكن للمسؤولين المصرح لهم إنشاء الحملات ومتابعة نشاطها. يظل كل منظم مسؤولاً عن شروط حملته وتسليم جوائزها.' },
-    labels: { lastUpdated: 'آخر تحديث: 12 أكتوبر 2026', toc: 'في هذه الصفحة', backHome: 'العودة للرئيسية', appName: 'التطبيق', operator: 'الجهة المشغلة', notLegalEntity: 'Creative Rewards App هو اسم التطبيق. لا يحدد هذا الإشعار شركة أو كياناً قانونياً مسجلاً منفصلاً.', contactUs: 'تواصل مع الدعم', external: 'صفحة التطبيق على Google Play' },
+    labels: { lastUpdated: "آخر تحديث: 25 أكتوبر 2026", toc: 'في هذه الصفحة', backHome: 'العودة للرئيسية', appName: 'التطبيق', operator: 'الجهة المشغلة', notLegalEntity: 'Creative Rewards App هو اسم التطبيق. لا يحدد هذا الإشعار شركة أو كياناً قانونياً مسجلاً منفصلاً.', contactUs: 'تواصل مع الدعم', external: 'صفحة التطبيق على Google Play' },
   },
 };
 

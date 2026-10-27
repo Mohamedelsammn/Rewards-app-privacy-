@@ -6,7 +6,7 @@ export const site = {
   name: 'Creative Rewards App',
   domain: 'https://creativerewardapp.tech',
   packageId: 'com.creativehub.rewardsapp',
-  supportEmail: 'mohamed.elsamman.dev@gmail.com',
+  supportEmail: 'zeromansms123@gmail.com',
   playUrl: 'https://play.google.com/store/apps/details?id=com.creativehub.rewardsapp',
   // Set this after the owner confirms the legal identity. Public copy falls back
   // to the app name and never renders a placeholder legal name.
@@ -222,7 +222,7 @@ export const copy: Record<Lang, {
         ],
         "bullets": [
           "Application: Creative Rewards",
-          "Email: mohamed.elsamman.dev@gmail.com"
+          "Email: zeromansms123@gmail.com"
         ]
       }
     ],
@@ -395,7 +395,7 @@ export const copy: Record<Lang, {
         ],
         "bullets": [
           "Application: Creative Rewards",
-          "Email: mohamed.elsamman.dev@gmail.com"
+          "Email: zeromansms123@gmail.com"
         ]
       }
     ],
@@ -612,7 +612,7 @@ export const copy: Record<Lang, {
         ],
         "bullets": [
           "التطبيق: Creative Rewards",
-          "البريد الإلكتروني: mohamed.elsamman.dev@gmail.com"
+          "البريد الإلكتروني: zeromansms123@gmail.com"
         ]
       }
     ],
@@ -785,7 +785,7 @@ export const copy: Record<Lang, {
         ],
         "bullets": [
           "التطبيق: Creative Rewards",
-          "البريد الإلكتروني: mohamed.elsamman.dev@gmail.com"
+          "البريد الإلكتروني: zeromansms123@gmail.com"
         ]
       }
     ],

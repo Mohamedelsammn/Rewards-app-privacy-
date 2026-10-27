@@ -110,7 +110,7 @@ test('legal pages carry the new date, both languages, and no outdated or placeho
   for (const [page, texts] of Object.entries(pages)) {
     const html = await read(page);
     for (const text of texts) assert.ok(html.includes(text), `${page} should include: ${text}`);
-    assert.ok(html.includes('mohamed.elsamman.dev@gmail.com'), `${page} should show the support email`);
+    assert.ok(html.includes('zeromansms123@gmail.com'), `${page} should show the support email`);
     // The previous app model (phone-number identities on Supabase) is gone.
     assert.doesNotMatch(
       html,
@@ -146,5 +146,5 @@ test('built pages contain no known credentials or service-role secrets', async (
   const pages = await Promise.all(files.map((file) => read(file)));
   const joined = pages.join('\n');
   assert.doesNotMatch(joined, /service[_-]?role|SUPABASE_SERVICE_ROLE|sb_secret_[A-Za-z0-9]+/i);
-  assert.ok(joined.includes('mohamed.elsamman.dev@gmail.com'));
+  assert.ok(joined.includes('zeromansms123@gmail.com'));
 });
